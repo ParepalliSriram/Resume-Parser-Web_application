@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon"  href="/static/images/Icon for favicon.jpg">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        body {
+            background-color: #ffffff; /* White background */
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            background-image: url('/static/images/resume_parser_image7.jpg'); 
+            background-size: cover; 
+        }
+
+        .header {
+            background-color: #ffffff;
+            color: #f48c42;
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 40px;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-nav a {
+            text-decoration: none;
+            margin-left: 10px;
+            border-radius: 5px;
+            padding: 2px 2px 2px 2px;
+            color: black;
+            font-size: 22px;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+
+        .header-nav a:hover {
+            transform: scale(1.08);
+            color: orange;
+            text-decoration-line: overline;
+        }
+
+        .header-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            flex-direction: column;
+            gap: 10px;
+            width: 150px;
+            z-index: 1001;
+        }
+
+        .header-menu a {
+            color: #ffffff;
+            background-color: orange;
+            font-size: 16px;
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+            text-align: center;
+            border: 2px solid white;
+            border-radius: 10px;
+        }
+
+        .header-menu a:hover {
+            transform: scale(0.95);
+            background-color: rgb(255, 196, 108);
+            font-size: 17px;
+        }
+
+        .header .hamburger {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .footer-bar {
+            width: 100%;
+            background: orange;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            margin-top: auto;
+            box-sizing: border-box;
+        }
+
+
+        @media (max-width: 800px) {
+            .header-nav {
+                display: none; /* Hide navigation items on small screens */
+            }
+
+            .header .hamburger {
+                display: block; /* Show hamburger icon on small screens */
+            }
+
+            .header-menu {
+                display: none; /* Hide menu by default */
+            }
+        }
+
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+
+        /* Overlay to hide background content during scanning */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+            display: none; /* Initially hidden */
+            z-index: 1001; /* Just below the loader */
+        }
+
+        .maindiv1 {
+            height: auto;
+            width: 100;
+            margin-top: 103px;
+            margin-bottom: 40px;
+            margin-left: 120px;
+            margin-right: 115px;
+            border-radius: 20px;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .subdiv1 {
+            max-width: 65%;
+            height: auto;
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        .subdiv2 {
+            width: 35%;
+            height: auto;
+            margin-left: 20px; /* Adjust as needed */
+        }
+
+        .subdiv2 img {
+            width: 400px;
+            height: auto;
+            background-color: transparent;
+            max-height: 460px; /* Adjust the image height */
+            border-radius: 10px;
+            margin-top: 95px;
+            margin-left: 8px;
+            animation: slideInFromLeft 0.8s ease-out forwards;
+        }
+        @keyframes slideInFromRight {
+            from {
+                transform: translateX(7vw); /* Start off-screen to the right */
+                opacity: 0;                   /* Start fully invisible */
+            }
+            to {
+                transform: translateX(0);     /* End at the current position */
+                opacity: 1;                   /* End fully visible */
+            }
+        }
+        @keyframes slideInFromLeft {
+            from {
+                transform: translateX(-7vw); /* Start off-screen to the right */
+                opacity: 0;                   /* Start fully invisible */
+            }
+            to {
+                transform: translateX(0);     /* End at the current position */
+                opacity: 1;                   /* End fully visible */
+            }
+        }
+
+
+
+        
+
+        
+
+
+        /* Footer bar social media icons styles */
+        .social-media {
+            display: flex;
+            position: inherit;
+            margin-left: 50%;
+            margin-top: 12px;
+
+        }
+
+        .Btn {
+        
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition-duration: 0.4s;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        margin-left: 15px;
+        }
+
+        .instagram {
+        background: #f09433;
+        background: -moz-linear-gradient(
+            45deg,
+            #f09433 0%,
+            #e6683c 25%,
+            #dc2743 50%,
+            #cc2366 75%,
+            #bc1888 100%
+        );
+        background: -webkit-linear-gradient(
+            45deg,
+            #f09433 0%,
+            #e6683c 25%,
+            #dc2743 50%,
+            #cc2366 75%,
+            #bc1888 100%
+        );
+        background: linear-gradient(
+            45deg,
+            #f09433 0%,
+            #e6683c 25%,
+            #dc2743 50%,
+            #cc2366 75%,
+            #bc1888 100%
+        );
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f09433', endColorstr='#bc1888',GradientType=1 );
+        }
+
+        .youtube {
+        background-color: #ff0000;
+        }
+
+        .twitter {
+        background-color: #1da1f2;
+        }
+
+        .linkedin {
+        background-color: #0077b5;
+        }
+
+        .github {
+        background-color: #333;
+        }
+
+        .Btn:hover {
+        width: 110px;
+        transition-duration: 0.4s;
+        border-radius: 30px;
+        }
+
+        .Btn:hover .text {
+        opacity: 1;
+        transition-duration: 0.4s;
+        }
+
+        .Btn:hover .svgIcon {
+        opacity: 0;
+        transition-duration: 0.3s;
+        }
+
+        .text {
+        position: absolute;
+        color: rgb(255, 255, 255);
+        width: 80px;
+        font-weight: 600;
+        opacity: 0;
+        transition-duration: 0.4s;
+        }
+
+        .svgIcon {
+        transition-duration: 0.3s;
+        }
+
+        .svgIcon path {
+        fill: white;
+        }
+        /* Media queries for responsiveness */
+
+        /* For devices with a max width of 800px */
+        @media (max-width: 800px) {
+            .header-nav {
+                display: none; /* Hide navigation items on small screens */
+            }
+
+            .header .hamburger {
+                display: block; /* Show hamburger icon on small screens */
+            }
+
+            .header-menu {
+                display: block; /* Show the menu when hamburger icon is clicked */
+            }
+        }
+
+        /* For devices with a max width of 600px */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 30px; /* Adjust header font size */
+            }
+
+            .header-nav a {
+                font-size: 18px; /* Adjust font size for navigation links */
+            }
+
+            .detail_card {
+                width: 250px; /* Adjust card width for smaller screens */
+                height: auto; /* Adjust card height to fit content */
+            }
+
+            .person-info-container {
+                flex-direction: column; /* Stack cards vertically on smaller screens */
+                align-items: center; /* Center cards horizontally */
+                margin-left: 0; /* Remove left margin */
+                margin-top: 20px; /* Add top margin */
+            }
+
+            .detail_card-img {
+                height: 200px; /* Adjust image height */
+            }
+
+            .social-media {
+                margin-left: 0; /* Center social media icons */
+                margin-top: 10px; /* Adjust top margin */
+            }
+        }
+
+        /* For devices with a max width of 400px */
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 20px; /* Further reduce header font size */
+            }
+
+            .header-nav a {
+                font-size: 16px; /* Further reduce font size for navigation links */
+            }
+
+            .detail_card {
+                width: 200px; /* Further reduce card width */
+            }
+
+            .detail_card-img {
+                height: 150px; /* Further reduce image height */
+            }
+
+            .detail_title {
+                font-size: 1.2em; /* Adjust title font size */
+            }
+
+            .detail_subtitle {
+                font-size: 0.8em; /* Adjust subtitle font size */
+            }
+        }
+          
+
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1 style="margin-left: 5px;">Resume Parser</h1>
+        <div class="header-nav">
+            <a  href="/">Home</a>
+            <a href="/about" style=" color: orange; text-decoration-line: initial;">About</a>
+            <a href="/contact" >Contact</a>
+        </div>
+        <div class="hamburger">&#9776;</div>
+        <div class="header-menu">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+        </div>
+    </header>
+   
+    <div class="maindiv1">
+        <div class="subdiv1">
+            <h1 style="text-align: center; color: #338bba; text-shadow: 2px 3px 1px #b1d1e2;margin-left: 20px; width: 100%;">The Role and Impact of Resume Parsing Technology</h1>
+            <p style="font-size: 18px; font-family: Arial, sans-serif; line-height: 0.9cm; color: #555; margin-left: 55px;">
+                &nbsp;&nbsp;&nbsp;&nbsp;<strong>Resume parser</strong> is a software tool designed to analyze and extract key information from resumes and CVs automatically.
+                 It identifies and categorizes data such as personal details, work experience, education, skills, and contact information.
+                  The parser then converts this information into a structured format, such as a database entry, making it easier for recruiters and HR systems to search, filter, 
+                  and evaluate candidates. It can also identify and categorize information based on predefined criteria, such as job titles, companies, dates, and keywords.
+                   This technology significantly speeds up the hiring process by automating the manual task of reviewing resumes. Resume parsers streamline the hiring process
+                    by reducing the need for manual data entry, enabling recruiters to quickly and accurately assess qualifications of the candidates, and improving overall efficiency
+                     in talent acquisition. Resume parsers are designed to handle different resume formats, whether they are in Word documents, PDFs, or other formats. 
+                     The parsed data is then structured into a standardized format, typically in a database or an applicant tracking system. 
+                     
+            </p>
+        </div>
+        <div class="subdiv2">
+            <img src="/static/images/giphy.gif" alt="Resume Parser Scanning">
+        </div>
+    </div>
+    
+
+        </div>
+        
+        
+   
+
+   
+
+    <div class="footer-bar">
+        <p style="float: left; position: relative; top: 9%; left: 25%;">&copy; 2024 Resume Analyzer. All Rights Reserved.</p>
+        <div class="social-media">
+        <button class="Btn linkedin" onclick="window.location.href='https://www.linkedin.com'">
+            <svg
+            class="svgIcon"
+            viewBox="0 0 448 512"
+            height="1.5em"
+            xmlns="http://www.w3.org/2000/svg"
+            >
+            <path
+                d="M100.28 448H7.4V160.05h92.88v287.95zm-46.44-328.1c-29.54 0-53.5-24.07-53.5-53.5s24.02-53.5 53.5-53.5c29.5 0 53.5 24.07 53.5 53.5s-24 53.5-53.5 53.5zm365.44 328.1h-92.88V327.68c0-28.23-10.08-47.49-35.32-47.49-19.28 0-30.71 12.94-35.77 25.38-1.84 4.4-2.31 10.53-2.31 16.7v126.3h-92.87c1.25-207.9 0-287.95 0-287.95h92.87v40.96c12.23-18.77 34.4-45.6 83.52-45.6 61.62 0 107.58 40.53 107.58 127.6v165.4z"
+            ></path>
+            </svg>
+            <span class="text">LinkedIn</span>
+        </button>
+        <button class="Btn instagram" onclick="window.location.href='https://www.instagram.com'">
+            <svg
+            class="svgIcon"
+            viewBox="0 0 448 512"
+            height="1.5em"
+            xmlns="http://www.w3.org/2000/svg"
+            >
+            <path
+                d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"
+            ></path>
+            </svg>
+            <span class="text">Instagram</span>
+        </button>
+        <button class="Btn github" onclick="window.location.href='https://www.github.com'">
+            <svg
+            class="svgIcon"
+            viewBox="0 0 496 512"
+            height="1.5em"
+            xmlns="http://www.w3.org/2000/svg"
+            >
+            <path
+                d="M248 8C111.03 8 0 119.03 0 256c0 110.5 71.74 203.5 169.57 236.5 12.38 2.29 16.9-5.42 16.9-12.05 0-6.12-.22-26.32-.35-47.94-68.47 14.91-82.89-32.98-82.89-32.98-11.2-28.53-27.32-36.1-27.32-36.1-22.32-15.28.8-14.95.8-14.95 24.74 1.76 37.74 25.43 37.74 25.43 21.98 37.7 57.76 26.82 71.9 20.5 2.22-15.91 8.58-26.82 15.61-32.94-57.9-6.53-118.73-28.95-118.73-128.53 0-28.43 10.16-51.66 26.78-69.94-2.68-6.53-11.6-33.04 2.55-68.58 0 0 21.66-6.93 71.02 26.48 20.63-5.7 42.67-8.57 64.63-8.68 21.9.11 44 2.98 64.72 8.68 49.33-33.41 71.69-26.48 71.69-26.48 14.3 35.53 5.22 62.05 2.55 68.58 16.62 18.28 26.8 41.51 26.8 69.94 0 99.54-60.95 122-118.77 128.52 8.8 7.63 16.67 22.66 16.67 45.86 0 33.15-.3 59.26-.3 67.3 0 6.63 4.52 14.38 17.01 12.05C424.26 459.5 496 366.5 496 256 496 119.03 384.97 8 248 8z"
+            ></path>
+            </svg>
+            <span class="text">GitHub</span>
+        </button>
+
+        <button class="Btn youtube" onclick="window.location.href='https://www.youtube.com'">
+            <svg
+            class="svgIcon"
+            viewBox="0 0 576 512"
+            height="1.5em"
+            xmlns="http://www.w3.org/2000/svg"
+            >
+            <path
+                d="M549.655 148.28c-6.281-23.64-24.041-42.396-47.655-48.685C462.923 85 288 85 288 85S113.077 85 74 99.595c-23.614 6.289-41.374 25.045-47.655 48.685-12.614 47.328-12.614 147.717-12.614 147.717s0 100.39 12.614 147.718c6.281 23.64 24.041 42.396 47.655 48.684C113.077 427 288 427 288 427s174.923 0 214-14.595c23.614-6.289 41.374-25.045 47.655-48.685 12.614-47.328 12.614-147.718 12.614-147.718s0-100.389-12.614-147.717zM240 336V176l144 80-144 80z"
+            ></path>
+            </svg>
+            <span class="text">YouTube</span>
+        </button>
+
+        <button class="Btn twitter" onclick="window.location.href='https://www.linkedin.com'">
+            <svg
+            class="svgIcon"
+            viewBox="0 0 512 512"
+            height="1.5em"
+            xmlns="http://www.w3.org/2000/svg"
+            >
+            <path
+                d="M512 97.248c-18.84 8.36-39.082 14.008-60.277 16.54 21.62-12.92 38.212-33.216 46.042-57.45-20.242 12-42.71 20.67-66.61 25.41-19.128-20.412-46.344-33.21-76.51-33.21-58 0-105 47-105 105 0 8.22.926 16.188 2.714 23.914-87.18-4.376-164.66-46.2-216.45-109.97-9.066 15.508-14.254 33.586-14.254 52.836 0 36.37 18.54 68.542 46.844 87.428-17.272-.554-33.52-5.286-47.754-13.158v1.32c0 50.828 36.13 93.15 84.198 102.79-8.826 2.396-18.14 3.686-27.734 3.686-6.78 0-13.34-.664-19.676-1.902 13.36 41.77 52.164 72.198 98.116 73.052-35.96 28.17-81.38 44.99-130.76 44.99-8.54 0-16.94-.5-25.14-1.476 46.684 29.922 101.99 47.31 161.18 47.31 193.32 0 298.924-160.078 298.924-298.926 0-4.554-.106-9.086-.306-13.594 20.546-14.824 38.364-33.298 52.456-54.422z"
+            ></path>
+            </svg>
+            <span class="text">Twitter</span>
+        </button>
+
+        
+
+        
+        </div>
+
+          
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $('.hamburger').on('click', function() {
+            $('.header-menu').toggle();
+        });
+    </script>
+</body>
